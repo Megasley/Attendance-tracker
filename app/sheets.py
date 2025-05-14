@@ -44,7 +44,7 @@ def verify_access_code(access_code):
                 # Get the user's name from column A
                 user_name = row[0] if len(row) > 0 else "User"
                 
-                if current_date == datetime(2025, 4, 9).date():
+                if current_date == datetime(2025, 5, 14).date():
                     cell = f'F{index}'
                     sheet.update(cell, True)  # Update to TRUE
                     cell_range = f'A{index}:F{index}'
@@ -55,7 +55,7 @@ def verify_access_code(access_code):
                             "blue": 0.85
                         }
                     })
-                elif current_date == datetime(2025, 4, 10).date():
+                elif current_date == datetime(2025, 5, 15).date():
                     cell = f'G{index}'
                     sheet.update(cell, True)  # Update to TRUE
                     cell_range = f'A{index}:G{index}'
@@ -66,7 +66,7 @@ def verify_access_code(access_code):
                             "blue": 0.85
                         }
                     })
-                elif current_date == datetime(2025, 4, 11).date():
+                elif current_date == datetime(2025, 5, 16).date():
                     cell = f'H{index}'
                     sheet.update(cell, True)  # Update to TRUE
                     cell_range = f'A{index}:H{index}'
@@ -77,7 +77,7 @@ def verify_access_code(access_code):
                             "blue": 0.85
                         }
                     })
-                elif current_date == datetime(2025, 4, 12).date():
+                elif current_date == datetime(2025, 5, 17).date():
                     cell = f'I{index}'
                     sheet.update(cell, True)  # Update to TRUE
                     cell_range = f'A{index}:I{index}'
