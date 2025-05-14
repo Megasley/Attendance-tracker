@@ -171,7 +171,7 @@
                     resultDiv.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
                 }
             } catch (error) {
-                resultDiv.innerHTML = '<div class="alert alert-danger">An error occurred. Please try again.</div>';
+                resultDiv.innerHTML = "<div class='alert alert-danger'>Oops! Please double-check that you're using the email you registered with and try again.</div>";
             } finally {
                 // Re-enable form after processing
                 button.disabled = false;

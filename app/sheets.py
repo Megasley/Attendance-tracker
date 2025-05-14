@@ -89,7 +89,7 @@ def verify_access_code(access_code):
                         }
                     })
                 
-                return {'success': True, 'message': user_name}
+                return {'success': True, 'message': user_name.title()}
         
     except Exception as e:
         print(f"Error: {str(e)}")  # Added for debugging
