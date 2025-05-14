@@ -167,6 +167,7 @@
                 
                 if (data.success) {
                     resultDiv.innerHTML = `<div class="alert alert-success">Welcome, ${data.message}!</div>`;
+                    accessCode.value = "";
                 } else {
                     resultDiv.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
                 }
