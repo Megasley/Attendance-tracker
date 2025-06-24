@@ -89,7 +89,7 @@ def verify_access_code(access_code):
                         }
                     })
                 elif current_date == datetime(2025, 6, 28).date():
-                    cell = f'I{index}'
+                    cell = f'J{index}'
                     sheet.update(cell, True)  # Update to TRUE
                     cell_range = f'A{index}:J{index}'
                     sheet.format(cell_range, {
