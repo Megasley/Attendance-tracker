@@ -44,7 +44,7 @@ def verify_access_code(access_code):
                 # Get the user's name from column A
                 user_name = row[0] if len(row) > 0 else "User"
                 
-                if current_date == datetime(2025, 5, 14).date():
+                if current_date == datetime(2025, 6, 24).date():
                     cell = f'F{index}'
                     sheet.update(cell, True)  # Update to TRUE
                     cell_range = f'A{index}:F{index}'
@@ -55,7 +55,7 @@ def verify_access_code(access_code):
                             "blue": 0.85
                         }
                     })
-                elif current_date == datetime(2025, 5, 15).date():
+                elif current_date == datetime(2025, 6, 25).date():
                     cell = f'G{index}'
                     sheet.update(cell, True)  # Update to TRUE
                     cell_range = f'A{index}:G{index}'
@@ -66,7 +66,7 @@ def verify_access_code(access_code):
                             "blue": 0.85
                         }
                     })
-                elif current_date == datetime(2025, 5, 16).date():
+                elif current_date == datetime(2025, 6, 26).date():
                     cell = f'H{index}'
                     sheet.update(cell, True)  # Update to TRUE
                     cell_range = f'A{index}:H{index}'
@@ -77,10 +77,21 @@ def verify_access_code(access_code):
                             "blue": 0.85
                         }
                     })
-                elif current_date == datetime(2025, 5, 17).date():
+                elif current_date == datetime(2025, 6, 27).date():
                     cell = f'I{index}'
                     sheet.update(cell, True)  # Update to TRUE
                     cell_range = f'A{index}:I{index}'
+                    sheet.format(cell_range, {
+                        "backgroundColor": {
+                            "red": 0.85,
+                            "green": 0.92,
+                            "blue": 0.85
+                        }
+                    })
+                elif current_date == datetime(2025, 6, 28).date():
+                    cell = f'I{index}'
+                    sheet.update(cell, True)  # Update to TRUE
+                    cell_range = f'A{index}:J{index}'
                     sheet.format(cell_range, {
                         "backgroundColor": {
                             "red": 0.85,
