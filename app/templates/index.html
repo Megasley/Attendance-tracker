@@ -151,7 +151,7 @@
             button.disabled = true;
             accessCode.disabled = true;
             spinner.style.display = 'inline-block';
-            buttonText.textContent = 'Verifying Email...';
+            buttonText.textContent = 'Vérification de l’e-mail...';
             resultDiv.innerHTML = '';
             
             try {
@@ -166,19 +166,19 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    resultDiv.innerHTML = `<div class="alert alert-success">Welcome, ${data.message}!</div>`;
+                    resultDiv.innerHTML = `<div class="alert alert-success">Bienvenue, ${data.message}!</div>`;
                     accessCode.value = "";
                 } else {
                     resultDiv.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
                 }
             } catch (error) {
-                resultDiv.innerHTML = "<div class='alert alert-danger'>Oops! Please double-check that you're using the email you registered with and try again.</div>";
+                resultDiv.innerHTML = "<div class='alert alert-danger'>Oups ! Veuillez vérifier que vous utilisez l’adresse e-mail enregistrée lors de votre inscription, puis réessayez.</div>";
             } finally {
                 // Re-enable form after processing
                 button.disabled = false;
                 accessCode.disabled = false;
                 spinner.style.display = 'none';
-                buttonText.textContent = 'Verify Email';
+                buttonText.textContent = 'érifier l’e-mail ';
             }
         });
     </script>
