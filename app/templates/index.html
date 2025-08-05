@@ -14,7 +14,7 @@
             --danger-color: #DC2626;
             --background: #F9FAFB;
         }
-        
+
         body {
             background-color: var(--background);
             font-family: 'Inter', sans-serif;
@@ -22,7 +22,7 @@
             display: flex;
             align-items: center;
         }
-        
+
         .verification-container {
             max-width: 440px;
             margin: 0 auto;
@@ -32,11 +32,11 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             transition: transform 0.2s ease;
         }
-        
+
         .verification-container:hover {
             transform: translateY(-2px);
         }
-        
+
         h2 {
             color: #111827;
             font-weight: 600;
@@ -49,7 +49,7 @@
             font-size: 1rem;
             margin-bottom: 0;
         }
-        
+
         .form-control {
             padding: 0.75rem 1rem;
             font-size: 1rem;
@@ -57,12 +57,12 @@
             border-radius: 8px;
             transition: all 0.2s ease;
         }
-        
+
         .form-control:focus {
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
         }
-        
+
         .btn-primary {
             background-color: var(--primary-color);
             border: none;
@@ -71,23 +71,23 @@
             border-radius: 8px;
             transition: all 0.2s ease;
         }
-        
+
         .btn-primary:hover {
             background-color: var(--primary-hover);
             transform: translateY(-1px);
         }
-        
+
         .btn-primary:active {
             transform: translateY(0);
         }
-        
+
         .spinner-border {
             width: 1.25rem;
             height: 1.25rem;
             margin-right: 0.5rem;
             display: none;
         }
-        
+
         .alert {
             padding: 1rem;
             border-radius: 8px;
@@ -97,19 +97,19 @@
             transform: translateY(10px);
             animation: slideIn 0.3s ease forwards;
         }
-        
+
         .alert-success {
             background-color: #ECFDF5;
             border: 1px solid #A7F3D0;
             color: var(--success-color);
         }
-        
+
         .alert-danger {
             background-color: #FEF2F2;
             border: 1px solid #FECACA;
             color: var(--danger-color);
         }
-        
+
         @keyframes slideIn {
             to {
                 opacity: 1;
@@ -121,16 +121,16 @@
 <body>
     <div class="container">
         <div class="verification-container">
-            <h2 class="text-center">Bienvenue!</h2>
-            <!-- <p class="subheader">Please checkin with your email</p> -->
+            <h2 class="text-center">Welcome!</h2>
+            <!-- <p class="subheader">Please check in with your email</p> -->
             <form id="verificationForm">
                 <div class="mb-4">
                     <!-- <label for="accessCode" class="form-label text-gray-700 mb-2">Email Address</label> -->
-                    <input type="email" class="form-control" id="accessCode" placeholder="Entrez votre adresse e-mail" required>
+                    <input type="email" class="form-control" id="accessCode" placeholder="Enter your email address" required>
                 </div>
                 <button type="submit" class="btn btn-primary w-100" id="verifyButton">
                     <span class="spinner-border" role="status" aria-hidden="true"></span>
-                    <span class="button-text">Enregistrez-vous Maintenant</span>
+                    <span class="button-text">Check In Now</span>
                 </button>
             </form>
             <div id="result" class="mt-3 text-center"></div>
@@ -140,20 +140,20 @@
     <script>
         document.getElementById('verificationForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
+
             const button = document.getElementById('verifyButton');
             const spinner = button.querySelector('.spinner-border');
             const buttonText = button.querySelector('.button-text');
             const accessCode = document.getElementById('accessCode');
             const resultDiv = document.getElementById('result');
-            
+
             // Disable form while processing
             button.disabled = true;
             accessCode.disabled = true;
             spinner.style.display = 'inline-block';
-            buttonText.textContent = 'Vérification de l’e-mail...';
+            buttonText.textContent = 'Verifying email...';
             resultDiv.innerHTML = '';
-            
+
             try {
                 const response = await fetch('/verify', {
                     method: 'POST',
@@ -162,23 +162,23 @@
                     },
                     body: `access_code=${encodeURIComponent(accessCode.value)}`
                 });
-                
+
                 const data = await response.json();
-                
+
                 if (data.success) {
-                    resultDiv.innerHTML = `<div class="alert alert-success">Bienvenue, ${data.message}!</div>`;
+                    resultDiv.innerHTML = `<div class="alert alert-success">Welcome, ${data.message}!</div>`;
                     accessCode.value = "";
                 } else {
                     resultDiv.innerHTML = `<div class="alert alert-danger">${data.message}</div>`;
                 }
             } catch (error) {
-                resultDiv.innerHTML = "<div class='alert alert-danger'>Oups ! Veuillez vérifier que vous utilisez l’adresse e-mail enregistrée lors de votre inscription, puis réessayez.</div>";
+                resultDiv.innerHTML = "<div class='alert alert-danger'>Oops! Please confirm you're using the email address you registered with, then try again.</div>";
             } finally {
                 // Re-enable form after processing
                 button.disabled = false;
                 accessCode.disabled = false;
                 spinner.style.display = 'none';
-                buttonText.textContent = 'érifier l’e-mail ';
+                buttonText.textContent = 'Verify Email';
             }
         });
     </script>

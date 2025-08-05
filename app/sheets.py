@@ -44,7 +44,7 @@ def verify_access_code(access_code):
                 # Get the user's name from column A
                 user_name = row[0] if len(row) > 0 else "User"
                 
-                if current_date == datetime(2025, 6, 24).date():
+                if current_date == datetime(2025, 8, 5).date():
                     cell = f'F{index}'
                     sheet.update(cell, True)  # Update to TRUE
                     cell_range = f'A{index}:F{index}'
@@ -55,7 +55,7 @@ def verify_access_code(access_code):
                             "blue": 0.85
                         }
                     })
-                elif current_date == datetime(2025, 6, 25).date():
+                elif current_date == datetime(2025, 8, 6).date():
                     cell = f'G{index}'
                     sheet.update(cell, True)  # Update to TRUE
                     cell_range = f'A{index}:G{index}'
@@ -66,7 +66,7 @@ def verify_access_code(access_code):
                             "blue": 0.85
                         }
                     })
-                elif current_date == datetime(2025, 6, 26).date():
+                elif current_date == datetime(2025, 8, 7).date():
                     cell = f'H{index}'
                     sheet.update(cell, True)  # Update to TRUE
                     cell_range = f'A{index}:H{index}'
@@ -77,7 +77,7 @@ def verify_access_code(access_code):
                             "blue": 0.85
                         }
                     })
-                elif current_date == datetime(2025, 6, 27).date():
+                elif current_date == datetime(2025, 8, 8).date():
                     cell = f'I{index}'
                     sheet.update(cell, True)  # Update to TRUE
                     cell_range = f'A{index}:I{index}'
@@ -88,7 +88,7 @@ def verify_access_code(access_code):
                             "blue": 0.85
                         }
                     })
-                elif current_date == datetime(2025, 6, 28).date():
+                elif current_date == datetime(2025, 8, 9).date():
                     cell = f'J{index}'
                     sheet.update(cell, True)  # Update to TRUE
                     cell_range = f'A{index}:J{index}'
