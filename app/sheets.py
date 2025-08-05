@@ -40,7 +40,7 @@ def verify_access_code(access_code):
         # Skip header row and check values
         current_date = datetime.now().date()
         for index, row in enumerate(all_values[1:], start=2):  # Start=2 because we skip header and Google Sheets is 1-based
-            if len(row) >= 3 and row[2] == access_code:  # Column C (index 2)
+            if len(row) >= 3 and row[2].lower() == access_code.lower():  # Column C (index 2)
                 # Get the user's name from column A
                 user_name = row[0] if len(row) > 0 else "User"
                 
