@@ -4,8 +4,45 @@ from config import Config
 from datetime import datetime
 import os
 from dotenv import load_dotenv
+import re
 
 load_dotenv()
+
+def column_number_to_letter(n):
+    """Convert a column number to a letter (e.g., 1 -> A, 27 -> AA)"""
+    result = ""
+    while n > 0:
+        n, remainder = divmod(n - 1, 26)
+        result = chr(65 + remainder) + result
+    return result
+
+def is_day_column(header_value):
+    """Check if header is a Day column (Day 1, Day 2, etc.)"""
+    if not header_value:
+        return False
+    header_lower = header_value.strip().lower()
+    # Match "Day 1", "Day 2", etc. or "Day1", "Day2", etc.
+    match = re.match(r'day\s*(\d+)', header_lower)
+    if match:
+        return int(match.group(1))
+    return False
+
+def get_day_for_date(current_date):
+    """Map current date to Day number based on event dates
+    Day 1 = November 11, 2025
+    Day 2 = November 12, 2025
+    Day 3 = November 13, 2025
+    Day 4 = November 14, 2025
+    Day 5 = November 15, 2025
+    """
+    event_dates = {
+        datetime(2025, 11, 11).date(): 1,
+        datetime(2025, 11, 12).date(): 2,
+        datetime(2025, 11, 13).date(): 3,
+        datetime(2025, 11, 14).date(): 4,
+        datetime(2025, 11, 15).date(): 5,
+    }
+    return event_dates.get(current_date)
 
 def verify_access_code(access_code):
     try:
@@ -37,71 +74,68 @@ def verify_access_code(access_code):
         # Get all values
         all_values = sheet.get_all_values()
         
-        # Skip header row and check values
+        if not all_values or len(all_values) < 1:
+            return {'success': False, 'message': 'Spreadsheet is empty'}
+        
+        # Get current date and determine which day it corresponds to
         current_date = datetime.now().date()
+        day_number = get_day_for_date(current_date)
+        
+        if day_number is None:
+            return {'success': False, 'message': f'Check-in is only available on event dates (November 11-15, 2025). Today is {current_date.strftime("%B %d, %Y")}.'}
+        
+        # Get header row (first row)
+        header_row = all_values[0]
+        
+        # Find the Day column that matches today's day number
+        # Structure: First Name, Last Name, Email, Phone Number, CV, Day 1, Day 2, Day 3, Day 4, Day 5
+        day_column_info = None  # (column_index, column_letter, day_number)
+        
+        for col_index, header_value in enumerate(header_row):
+            header_day_number = is_day_column(header_value)
+            if header_day_number == day_number:
+                column_letter = column_number_to_letter(col_index + 1)  # +1 because Sheets is 1-based
+                day_column_info = (col_index, column_letter, day_number)
+                break
+        
+        if day_column_info is None:
+            return {'success': False, 'message': f'Day {day_number} column not found in spreadsheet header'}
+        
+        col_index, column_letter, day_number = day_column_info
+        
+        # Find the user by email (access_code) in column C (index 2)
+        user_name = "User"
+        user_row_index = None
+        
         for index, row in enumerate(all_values[1:], start=2):  # Start=2 because we skip header and Google Sheets is 1-based
-            if len(row) >= 3 and row[2].lower() == access_code.lower():  # Column C (index 2)
-                # Get the user's name from column A
-                user_name = row[0] if len(row) > 0 else "User"
-                
-                if current_date == datetime(2025, 8, 5).date():
-                    cell = f'F{index}'
-                    sheet.update(cell, True)  # Update to TRUE
-                    cell_range = f'A{index}:F{index}'
-                    sheet.format(cell_range, {
-                        "backgroundColor": {
-                            "red": 0.85,
-                            "green": 0.92,
-                            "blue": 0.85
-                        }
-                    })
-                elif current_date == datetime(2025, 8, 6).date():
-                    cell = f'G{index}'
-                    sheet.update(cell, True)  # Update to TRUE
-                    cell_range = f'A{index}:G{index}'
-                    sheet.format(cell_range, {
-                        "backgroundColor": {
-                            "red": 0.85,
-                            "green": 0.92,
-                            "blue": 0.85
-                        }
-                    })
-                elif current_date == datetime(2025, 8, 7).date():
-                    cell = f'H{index}'
-                    sheet.update(cell, True)  # Update to TRUE
-                    cell_range = f'A{index}:H{index}'
-                    sheet.format(cell_range, {
-                        "backgroundColor": {
-                            "red": 0.85,
-                            "green": 0.92,
-                            "blue": 0.85
-                        }
-                    })
-                elif current_date == datetime(2025, 8, 8).date():
-                    cell = f'I{index}'
-                    sheet.update(cell, True)  # Update to TRUE
-                    cell_range = f'A{index}:I{index}'
-                    sheet.format(cell_range, {
-                        "backgroundColor": {
-                            "red": 0.85,
-                            "green": 0.92,
-                            "blue": 0.85
-                        }
-                    })
-                elif current_date == datetime(2025, 8, 9).date():
-                    cell = f'J{index}'
-                    sheet.update(cell, True)  # Update to TRUE
-                    cell_range = f'A{index}:J{index}'
-                    sheet.format(cell_range, {
-                        "backgroundColor": {
-                            "red": 0.85,
-                            "green": 0.92,
-                            "blue": 0.85
-                        }
-                    })
-                
-                return {'success': True, 'message': user_name.title()}
+            if len(row) >= 3 and row[2].lower() == access_code.lower():  # Column C (index 2) is Email
+                user_name = row[0] if len(row) > 0 and row[0] else "User"
+                if len(row) > 1 and row[1]:  # Add last name if available
+                    user_name = f"{user_name} {row[1]}"
+                user_row_index = index
+                break
+        
+        if user_row_index is None:
+            return {'success': False, 'message': 'Email not found in the system'}
+        
+        # Update the attendance cell to TRUE for today's day
+        cell = f'{column_letter}{user_row_index}'
+        sheet.update(cell, True)
+        
+        # Apply green background color to the row from column A to the checked day column
+        cell_range = f'A{user_row_index}:{column_letter}{user_row_index}'
+        sheet.format(cell_range, {
+            "backgroundColor": {
+                "red": 0.85,
+                "green": 0.92,
+                "blue": 0.85
+            }
+        })
+        
+        return {'success': True, 'message': f'{user_name.title()}'}
         
     except Exception as e:
         print(f"Error: {str(e)}")  # Added for debugging
+        import traceback
+        traceback.print_exc()
         return {'success': False, 'message': str(e)}
