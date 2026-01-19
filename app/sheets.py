@@ -29,18 +29,18 @@ def is_day_column(header_value):
 
 def get_day_for_date(current_date):
     """Map current date to Day number based on event dates
-    Day 1 = November 11, 2025
-    Day 2 = November 12, 2025
-    Day 3 = November 13, 2025
-    Day 4 = November 14, 2025
-    Day 5 = November 15, 2025
+    Day 1 = January 19, 2026
+    Day 2 = January 20, 2026
+    Day 3 = January 21, 2026
+    Day 4 = January 22, 2026
+    Day 5 = January 23, 2026
     """
     event_dates = {
-        datetime(2025, 11, 11).date(): 1,
-        datetime(2025, 11, 12).date(): 2,
-        datetime(2025, 11, 13).date(): 3,
-        datetime(2025, 11, 14).date(): 4,
-        datetime(2025, 11, 15).date(): 5,
+        datetime(2026, 1, 19).date(): 1,
+        datetime(2026, 1, 20).date(): 2,
+        datetime(2026, 1, 21).date(): 3,
+        datetime(2026, 1, 22).date(): 4,
+        datetime(2026, 1, 23).date(): 5,
     }
     return event_dates.get(current_date)
 
@@ -82,7 +82,7 @@ def verify_access_code(access_code):
         day_number = get_day_for_date(current_date)
         
         if day_number is None:
-            return {'success': False, 'message': f'Check-in is only available on event dates (November 11-15, 2025). Today is {current_date.strftime("%B %d, %Y")}.'}
+            return {'success': False, 'message': f'Check-in is only available on event dates (January 19-23, 2026). Today is {current_date.strftime("%B %d, %Y")}.'}
         
         # Get header row (first row)
         header_row = all_values[0]
