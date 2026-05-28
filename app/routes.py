@@ -1,10 +1,16 @@
 from flask import render_template, request, jsonify
-from app.sheets import verify_access_code
+from app.sheets import get_bootcamp_participants, verify_access_code
 from app import app
 
 @app.route('/', methods=['GET'])
 def index():
     return render_template('index.html')
+
+@app.route('/api/participants', methods=['GET'])
+def participants():
+    result = get_bootcamp_participants()
+    status_code = 200 if result.get('success') else 500
+    return jsonify(result), status_code
 
 @app.route('/verify', methods=['POST'])
 def verify():
