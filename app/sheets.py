@@ -8,6 +8,9 @@ import re
 
 load_dotenv()
 
+# Ethiopia uses East Africa Time (EAT), a fixed UTC+3 offset with no DST.
+ETHIOPIA_TZ = timezone(timedelta(hours=3))
+
 def get_attendance_sheet():
     scopes = ["https://www.googleapis.com/auth/spreadsheets"]
     credentials_dict = {
@@ -54,23 +57,20 @@ def is_day_column(header_value):
         return int(match.group(1))
     return False
 
-# Ethiopian time is UTC+3 (East Africa Time)
-ETHIOPIA_TZ = timezone(timedelta(hours=3))
-
 def get_day_for_date(current_date):
     """Map current date to Day number based on event dates
-    Day 1 = July 27, 2026
-    Day 2 = July 28, 2026
-    Day 3 = July 29, 2026
-    Day 4 = July 30, 2026
-    Day 5 = July 31, 2026
+    Day 1 = July 26, 2026
+    Day 2 = July 27, 2026
+    Day 3 = July 28, 2026
+    Day 4 = July 29, 2026
+    Day 5 = July 30, 2026
     """
     event_dates = {
-        datetime(2026, 7, 27).date(): 1,
-        datetime(2026, 7, 28).date(): 2,
-        datetime(2026, 7, 29).date(): 3,
-        datetime(2026, 7, 30).date(): 4,
-        datetime(2026, 7, 31).date(): 5,
+        datetime(2026, 7, 26).date(): 1,
+        datetime(2026, 7, 27).date(): 2,
+        datetime(2026, 7, 28).date(): 3,
+        datetime(2026, 7, 29).date(): 4,
+        datetime(2026, 7, 30).date(): 5,
     }
     return event_dates.get(current_date)
 
@@ -119,7 +119,7 @@ def verify_access_code(access_code):
         if not all_values or len(all_values) < 1:
             return {'success': False, 'message': 'Spreadsheet is empty'}
         
-        # Get current date (Ethiopian time) and determine which day it corresponds to
+        # Get current date (in Ethiopian time) and determine which day it corresponds to
         current_date = datetime.now(ETHIOPIA_TZ).date()
         day_number = get_day_for_date(current_date)
         
