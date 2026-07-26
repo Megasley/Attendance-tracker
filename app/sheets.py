@@ -124,7 +124,7 @@ def verify_access_code(access_code):
         day_number = get_day_for_date(current_date)
         
         if day_number is None:
-            return {'success': False, 'message': f'Check-in is only available on event dates (July 27-31, 2026). Today is {current_date.strftime("%B %d, %Y")}.'}
+            return {'success': False, 'message': f'Check-in is only available on event dates (July 26-31, 2026). Today is {current_date.strftime("%B %d, %Y")}.'}
         
         # Get header row (first row)
         header_row = all_values[0]
