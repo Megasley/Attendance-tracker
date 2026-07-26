@@ -1,7 +1,7 @@
 from google.oauth2 import service_account
 import gspread
 from config import Config
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 import os
 from dotenv import load_dotenv
 import re
@@ -54,20 +54,23 @@ def is_day_column(header_value):
         return int(match.group(1))
     return False
 
+# Ethiopian time is UTC+3 (East Africa Time)
+ETHIOPIA_TZ = timezone(timedelta(hours=3))
+
 def get_day_for_date(current_date):
     """Map current date to Day number based on event dates
-    Day 1 = June 8, 2026
-    Day 2 = June 9, 2026
-    Day 3 = June 10, 2026
-    Day 4 = June 11, 2026
-    Day 5 = June 12, 2026
+    Day 1 = July 27, 2026
+    Day 2 = July 28, 2026
+    Day 3 = July 29, 2026
+    Day 4 = July 30, 2026
+    Day 5 = July 31, 2026
     """
     event_dates = {
-        datetime(2026, 6, 8).date(): 1,
-        datetime(2026, 6, 9).date(): 2,
-        datetime(2026, 6, 10).date(): 3,
-        datetime(2026, 6, 11).date(): 4,
-        datetime(2026, 6, 12).date(): 5,
+        datetime(2026, 7, 27).date(): 1,
+        datetime(2026, 7, 28).date(): 2,
+        datetime(2026, 7, 29).date(): 3,
+        datetime(2026, 7, 30).date(): 4,
+        datetime(2026, 7, 31).date(): 5,
     }
     return event_dates.get(current_date)
 
@@ -116,12 +119,12 @@ def verify_access_code(access_code):
         if not all_values or len(all_values) < 1:
             return {'success': False, 'message': 'Spreadsheet is empty'}
         
-        # Get current date and determine which day it corresponds to
-        current_date = datetime.now().date()
+        # Get current date (Ethiopian time) and determine which day it corresponds to
+        current_date = datetime.now(ETHIOPIA_TZ).date()
         day_number = get_day_for_date(current_date)
         
         if day_number is None:
-            return {'success': False, 'message': f'Check-in is only available on event dates (June 8-12, 2026). Today is {current_date.strftime("%B %d, %Y")}.'}
+            return {'success': False, 'message': f'Check-in is only available on event dates (July 27-31, 2026). Today is {current_date.strftime("%B %d, %Y")}.'}
         
         # Get header row (first row)
         header_row = all_values[0]
