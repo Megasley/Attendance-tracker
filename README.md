@@ -1,17 +1,32 @@
 # Attendance-tracker
 
+## Setting up a new bootcamp
+
+Edit the **EVENT SETTINGS** block at the top of `config.py` (sheet ID, city, start date, number of days, UTC offset) and push. Nothing needs changing on Render.
+
 ## Environment Variables
 
 Create a `.env` file (or export these values in your shell) before running the app or the `scripts/send_congrats_emails.py` helper:
 
 ```
-GOOGLE_SHEETS_ID=your_google_sheet_id
 GOOGLE_PROJECT_ID=your_project_id
 GOOGLE_PRIVATE_KEY_ID=your_private_key_id
 GOOGLE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYOUR_PRIVATE_KEY\n-----END PRIVATE KEY-----\n"
 GOOGLE_CLIENT_EMAIL=service-account@project.iam.gserviceaccount.com
 GOOGLE_CLIENT_ID=your_client_id
 GOOGLE_CLIENT_X509_CERT_URL=https://www.googleapis.com/robot/v1/metadata/x509/...
+
+# Admin-only participant list. Leave unset to disable /api/participants entirely.
+ADMIN_TOKEN=some-long-random-string
+```
+
+Fetch the participant list (admins only):
+
+```
+curl -H "X-Admin-Token: $ADMIN_TOKEN" https://<your-app>/api/participants
+```
+
+```
 
 # Gmail SMTP configuration
 SMTP_HOST=smtp.gmail.com

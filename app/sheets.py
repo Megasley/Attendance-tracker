@@ -1,15 +1,17 @@
 from google.oauth2 import service_account
 import gspread
-from config import Config
-from datetime import datetime, timezone, timedelta
+from config import Config, event_date_range_text
+from datetime import datetime
+import logging
 import os
 from dotenv import load_dotenv
 import re
 
 load_dotenv()
 
-# Ethiopia uses East Africa Time (EAT), a fixed UTC+3 offset with no DST.
-ETHIOPIA_TZ = timezone(timedelta(hours=3))
+logger = logging.getLogger(__name__)
+
+GENERIC_ERROR = 'Something went wrong while checking you in. Please try again or ask an organiser for help.'
 
 def get_attendance_sheet():
     scopes = ["https://www.googleapis.com/auth/spreadsheets"]
@@ -58,21 +60,17 @@ def is_day_column(header_value):
     return False
 
 def get_day_for_date(current_date):
-    """Map current date to Day number based on event dates
-    Day 1 = September 21, 2026
-    Day 2 = September 22, 2026
-    Day 3 = September 23, 2026
-    Day 4 = September 24, 2026
-    Day 5 = September 25, 2026
-    """
-    event_dates = {
-        datetime(2026, 9, 21).date(): 1,
-        datetime(2026, 9, 22).date(): 2,
-        datetime(2026, 9, 23).date(): 3,
-        datetime(2026, 9, 24).date(): 4,
-        datetime(2026, 9, 25).date(): 5,
-    }
-    return event_dates.get(current_date)
+    """Map a date to its event Day number (1-based), or None if it's not an event day.
+    Event dates come from EVENT_START_DATE and EVENT_DAYS in the config."""
+    day_number = (current_date - Config.EVENT_START_DATE).days + 1
+    if 1 <= day_number <= Config.EVENT_DAYS:
+        return day_number
+    return None
+
+CHECKED_IN_VALUES = {'true', 'yes', 'y', '1', 'x', '\u2713', '\u2714'}
+
+def is_checked_in(cell_value):
+    return str(cell_value).strip().lower() in CHECKED_IN_VALUES
 
 def get_bootcamp_participants():
     try:
@@ -103,13 +101,12 @@ def get_bootcamp_participants():
             'participants': participants
         }
 
-    except Exception as e:
-        print(f"Error: {str(e)}")
-        import traceback
-        traceback.print_exc()
-        return {'success': False, 'message': str(e)}
+    except Exception:
+        logger.exception("Failed to load participants")
+        return {'success': False, 'message': 'Could not load participants.'}
 
 def verify_access_code(access_code):
+    access_code = (access_code or '').strip().lower()
     try:
         sheet = get_attendance_sheet()
         
@@ -119,18 +116,18 @@ def verify_access_code(access_code):
         if not all_values or len(all_values) < 1:
             return {'success': False, 'message': 'Spreadsheet is empty'}
         
-        # Get current date (in Ethiopian time) and determine which day it corresponds to
-        current_date = datetime.now(ETHIOPIA_TZ).date()
+        # Get current date in the event's local time and determine which day it corresponds to
+        current_date = datetime.now(Config.EVENT_TZ).date()
         day_number = get_day_for_date(current_date)
         
         if day_number is None:
-            return {'success': False, 'message': f'Check-in is only available on event dates (September 21-25, 2026). Today is {current_date.strftime("%B %d, %Y")}.'}
+            return {'success': False, 'message': f'Check-in is only available on event dates ({event_date_range_text()}). Today is {current_date.strftime("%B %d, %Y")}.'}
         
         # Get header row (first row)
         header_row = all_values[0]
         
         # Find the Day column that matches today's day number
-        # Structure: First Name, Last Name, Email, Phone Number, CV, Day 1, Day 2, Day 3, Day 4, Day 5
+        # Structure: First Name, Last Name, Email, Phone Number, CV, Day 1, Day 2, ... Day N
         day_column_info = None  # (column_index, column_letter, day_number)
         
         for col_index, header_value in enumerate(header_row):
@@ -141,7 +138,8 @@ def verify_access_code(access_code):
                 break
         
         if day_column_info is None:
-            return {'success': False, 'message': f'Day {day_number} column not found in spreadsheet header'}
+            logger.error("Day %s column not found in spreadsheet header: %r", day_number, header_row)
+            return {'success': False, 'message': "Check-in isn't set up for today yet. Please ask an organiser for help."}
         
         col_index, column_letter, day_number = day_column_info
         
@@ -150,7 +148,7 @@ def verify_access_code(access_code):
         user_row_index = None
         
         for index, row in enumerate(all_values[1:], start=2):  # Start=2 because we skip header and Google Sheets is 1-based
-            if len(row) >= 3 and row[2].lower() == access_code.lower():  # Column C (index 2) is Email
+            if len(row) >= 3 and row[2].strip().lower() == access_code:  # Column C (index 2) is Email
                 user_name = row[0] if len(row) > 0 and row[0] else "User"
                 if len(row) > 1 and row[1]:  # Add last name if available
                     user_name = f"{user_name} {row[1]}"
@@ -159,6 +157,16 @@ def verify_access_code(access_code):
         
         if user_row_index is None:
             return {'success': False, 'message': 'Email not found in the system'}
+        
+        # Don't re-write the sheet if they've already checked in today
+        user_row = all_values[user_row_index - 1]
+        if col_index < len(user_row) and is_checked_in(user_row[col_index]):
+            return {
+                'success': True,
+                'already_checked_in': True,
+                'name': user_name.title(),
+                'message': f'{user_name.title()}',
+            }
         
         # Update the attendance cell to TRUE for today's day
         cell = f'{column_letter}{user_row_index}'
@@ -174,10 +182,13 @@ def verify_access_code(access_code):
             }
         })
         
-        return {'success': True, 'message': f'{user_name.title()}'}
+        return {
+            'success': True,
+            'already_checked_in': False,
+            'name': user_name.title(),
+            'message': f'{user_name.title()}',
+        }
         
-    except Exception as e:
-        print(f"Error: {str(e)}")  # Added for debugging
-        import traceback
-        traceback.print_exc()
-        return {'success': False, 'message': str(e)}
+    except Exception:
+        logger.exception("Check-in failed")
+        return {'success': False, 'message': GENERIC_ERROR}
