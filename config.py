@@ -11,7 +11,7 @@ load_dotenv()
 # ============================================================
 GOOGLE_SHEETS_ID = '1ZLRzb7NzcBYS-HcYQY5a7iX0Eja0Z-xUM0TsfL76FDk'
 EVENT_CITY = 'Dakar'
-EVENT_START_DATE = date(2026, 11, 15)   # Day 1
+EVENT_START_DATE = date(2026, 11, 16)   # Day 1
 EVENT_DAYS = 5                          # sheet needs "Day 1" ... "Day 4" columns
 EVENT_UTC_OFFSET = 1                    # Dakar 0, Lagos 1, Kigali 2, Addis Ababa / Dar es Salaam 3
 # ============================================================
