@@ -9,11 +9,11 @@ load_dotenv()
 # EVENT SETTINGS: edit these for each bootcamp, then push.
 # (Not read from .env / Render, so there's only one place to change them.)
 # ============================================================
-GOOGLE_SHEETS_ID = '1ZLRzb7NzcBYS-HcYQY5a7iX0Eja0Z-xUM0TsfL76FDk'
-EVENT_CITY = 'Dakar'
-EVENT_START_DATE = date(2026, 11, 16)   # Day 1
+GOOGLE_SHEETS_ID = '1kDONZjeq_ML1X5KPL1jJXPSyPsUGl3Tar0bjh6VdDis'
+EVENT_CITY = 'Blantyre'
+EVENT_START_DATE = date(2026, 11, 23)   # Day 1
 EVENT_DAYS = 5                          # sheet needs "Day 1" ... "Day 4" columns
-EVENT_UTC_OFFSET = 1                    # Dakar 0, Lagos 1, Kigali 2, Addis Ababa / Dar es Salaam 3
+EVENT_UTC_OFFSET = 2                    # Dakar 0, Lagos 1, Kigali 2, Addis Ababa / Dar es Salaam 3
 # ============================================================
 
 
